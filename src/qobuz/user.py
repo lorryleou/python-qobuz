@@ -69,7 +69,7 @@ class User(object):
         return resp.get("status") == "success"
 
 
-    def _get_params_splitted(self, kwargs, chunk_size=50):
+    def _get_params_splitted(self, kwargs, chunk_size=1):
         """Get all ids from kwarg, split params into chunk
         """
         def get_ids(args, name):
@@ -137,17 +137,17 @@ class User(object):
         Returns
         -------
         bool
-            Successfully added to favorites
+            True if all items were successfully added, False if any failed
         """
-
-        for params in  self._get_params_splitted(kwargs):
+        all_success = True
+        for params in self._get_params_splitted(kwargs):
             status = api.request(
                 "favorite/create",
                 **params
             )
             if status.get("status") != "success":
-                return False
-        return True
+                all_success = False
+        return all_success
 
     def favorites_del(self, **kwargs):
         """Delete artists/albums/tracks from favorites.
@@ -161,17 +161,17 @@ class User(object):
         Returns
         -------
         bool
-            Successfully deleted from favorites
+            True if all items were successfully deleted, False if any failed
         """
-
-        for params in  self._get_params_splitted(kwargs):
+        all_success = True
+        for params in self._get_params_splitted(kwargs):
             status = api.request(
                 "favorite/delete",
                 **params,
             )
             if status.get("status") != "success":
-                return False
-        return True
+                all_success = False
+        return all_success
 
     def favorites_status(self, obj):
         """Get status whether obj is in the favorites.
